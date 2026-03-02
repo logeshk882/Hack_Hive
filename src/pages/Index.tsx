@@ -1,12 +1,46 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import ParticlesBackground from "../components/ParticlesBackground";
+import Navbar from "../components/Navbar";
+import HeroSection from "../components/HeroSection";
+import StatsBar from "../components/StatsBar";
+import TrendingSection from "../components/TrendingSection";
+import AllHackathonsSection from "../components/AllHackathonsSection";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-background grid-bg relative">
+      <ParticlesBackground />
+      <Navbar />
+
+      {/* Hero */}
+      <HeroSection />
+
+      {/* Stats */}
+      <div className="relative z-10 px-6 -mt-20 mb-20">
+        <StatsBar />
       </div>
+
+      {/* Trending */}
+      <div className="relative z-10 px-6 max-w-7xl mx-auto mb-20">
+        <TrendingSection />
+      </div>
+
+      {/* All Hackathons */}
+      <div className="relative z-10 px-6 max-w-7xl mx-auto mb-20">
+        <AllHackathonsSection />
+      </div>
+
+      {/* Footer */}
+      <footer className="relative z-10 border-t border-border/50 py-12 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+          <span className="font-mono">© 2026 HackPulse. All rights reserved.</span>
+          <div className="flex gap-6">
+            <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
+            <a href="#" className="hover:text-foreground transition-colors">Terms</a>
+            <a href="#" className="hover:text-foreground transition-colors">API Docs</a>
+            <a href="#" className="hover:text-foreground transition-colors">Contact</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
