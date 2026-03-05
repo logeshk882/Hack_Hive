@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
+const Hackathon = require('./models/Hackathon');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -9,42 +11,29 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Mock Data
-const allHackathons = [
-    {
-        title: "MIT Reality Hack 2026",
-        organizer: "MIT Media Lab",
-        deadline: "2026-03-25",
-        participants: "1.5K+",
-        prize: "$75K",
-        tags: ["AR / VR", "XR", "AI"],
-        location: "Boston, USA",
-        source: "Devpost",
-    },
-    {
-        title: "Smart India Hackathon",
-        organizer: "Govt. of India",
-        deadline: "2026-04-30",
-        participants: "50K+",
-        prize: "₹25L",
-        tags: ["Civic Tech", "AI / ML", "IoT"],
-        location: "India (Multiple Cities)",
-        source: "Knowafest",
-    }
-];
+// MongoDB Connection
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/hackathons';
+mongoose.connect(MONGO_URI)
+    .then(() => console.log('Successfully connected to MongoDB/hackathons'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
 // Basic Route
 app.get('/', (req, res) => {
-    res.json({ message: "Backend is running!", count: allHackathons.length });
+    res.json({ message: "Backend is running!" });
 });
 
-// Example API Routes
+// API Routes
 app.get('/api/health', (req, res) => {
     res.json({ status: "ok", timestamp: new Date() });
 });
 
-app.get('/api/hackathons', (req, res) => {
-    res.json(allHackathons);
+app.get('/api/hackathons', async (req, res) => {
+    try {
+        const hackathons = await Hackathon.find().sort({ createdAt: -1 });
+        res.json(hackathons);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
 app.listen(PORT, () => {

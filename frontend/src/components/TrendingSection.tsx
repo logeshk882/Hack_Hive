@@ -1,79 +1,43 @@
 import { useRef } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Flame } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flame, Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import HackathonCard from "./HackathonCard";
-
-const trendingHackathons = [
-  {
-    title: "ETHGlobal Brussels 2026",
-    organizer: "ETHGlobal",
-    deadline: "2026-04-15",
-    participants: "3.2K+",
-    prize: "$500K",
-    tags: ["Web3", "Blockchain", "DeFi"],
-    location: "Brussels, Belgium",
-    source: "Devpost",
-  },
-  {
-    title: "Google AI Hackathon",
-    organizer: "Google Developers",
-    deadline: "2026-03-28",
-    participants: "12K+",
-    prize: "$200K",
-    tags: ["AI / ML", "Cloud", "LLM"],
-    location: "Online",
-    source: "Unstop",
-  },
-  {
-    title: "HackTheBox CTF 2026",
-    organizer: "Hack The Box",
-    deadline: "2026-04-02",
-    participants: "8K+",
-    prize: "$100K",
-    tags: ["Cybersecurity", "CTF"],
-    location: "Online",
-    source: "Knowafest",
-  },
-  {
-    title: "Climate Tech Challenge",
-    organizer: "UN Innovation Lab",
-    deadline: "2026-05-10",
-    participants: "5K+",
-    prize: "$300K",
-    tags: ["Climate", "Sustainability", "IoT"],
-    location: "Nairobi, Kenya",
-    source: "Devpost",
-  },
-  {
-    title: "Open Source India 2026",
-    organizer: "FOSSASIA",
-    deadline: "2026-03-20",
-    participants: "2.1K+",
-    prize: "$50K",
-    tags: ["Open Source", "Linux", "DevOps"],
-    location: "Bengaluru, India",
-    source: "Knowafest",
-  },
-  {
-    title: "DeFi Builder Summit",
-    organizer: "Solana Foundation",
-    deadline: "2026-04-22",
-    participants: "6K+",
-    prize: "$1M",
-    tags: ["Web3", "Solana", "DeFi"],
-    location: "Miami, USA",
-    source: "Devpost",
-  },
-];
 
 export default function TrendingSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const { data: hackathons = [], isLoading, error } = useQuery({
+    queryKey: ['hackathons'],
+    queryFn: async () => {
+      const response = await fetch('/api/hackathons');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    },
+  });
 
   const scroll = (dir: "left" | "right") => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: dir === "left" ? -380 : 380, behavior: "smooth" });
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return null; // Don't show anything if there's an error
+  }
+
+  // Use the first 6 hackathons as "trending"
+  const trendingHackathons = hackathons.slice(0, 6);
 
   return (
     <section className="relative">
@@ -112,7 +76,7 @@ export default function TrendingSection() {
         style={{ scrollbarWidth: "none" }}
       >
         {trendingHackathons.map((h, i) => (
-          <div key={h.title} className="min-w-[340px] max-w-[340px] snap-start">
+          <div key={h._id || h.title} className="min-w-[340px] max-w-[340px] snap-start">
             <HackathonCard {...h} index={i} />
           </div>
         ))}

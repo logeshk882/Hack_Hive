@@ -1,2 +1,11 @@
-scrapy
-pymongo
+scrapy==2.14.1
+pymongo==4.16.0
+scrapy-playwright==0.0.46
+playwright==1.58.0
+beautifulsoup4==4.14.3
+lxml==6.0.2
+requests==2.32.5
+python-dotenv==1.2.2
+rapidfuzz==3.14.3
+fake-useragent==2.2.0
+scrapy-user-agents==0.1.1
