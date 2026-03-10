@@ -3,7 +3,16 @@ import { Zap } from "lucide-react";
 import Globe3D from "./Globe3D";
 import SearchBar from "./SearchBar";
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  onSearch?: (query: string) => void;
+  searchQuery?: string;
+}
+
+export default function HeroSection({ onSearch, searchQuery }: HeroSectionProps) {
+  const scrollToHackathons = () => {
+    document.getElementById("all-hackathons")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* 3D Globe Background */}
@@ -22,7 +31,7 @@ export default function HeroSection() {
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-medium text-primary mb-8"
         >
           <Zap className="w-3.5 h-3.5" />
-          Aggregating 2,800+ hackathons in real-time
+          Aggregating hackathons in real-time
         </motion.div>
 
         {/* Headline */}
@@ -49,7 +58,7 @@ export default function HeroSection() {
         </motion.p>
 
         {/* Search Bar */}
-        <SearchBar />
+        <SearchBar onSearch={onSearch} value={searchQuery} />
 
         {/* CTA Buttons */}
         <motion.div
@@ -58,7 +67,10 @@ export default function HeroSection() {
           transition={{ delay: 0.8, duration: 0.6 }}
           className="flex items-center justify-center gap-4 mt-10"
         >
-          <button className="px-8 py-3 rounded-xl bg-gradient-neon text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all duration-300 glow-cyan animate-glow-pulse">
+          <button
+            onClick={scrollToHackathons}
+            className="px-8 py-3 rounded-xl bg-gradient-neon text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all duration-300 glow-cyan animate-glow-pulse"
+          >
             Explore Hackathons
           </button>
           <button className="px-8 py-3 rounded-xl glass text-foreground font-medium text-sm hover:text-primary hover:border-primary/30 transition-all duration-300">
