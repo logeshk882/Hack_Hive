@@ -9,3 +9,5 @@ class HackathonItem(scrapy.Item):
     participants = scrapy.Field()
     prize = scrapy.Field()
     tags = scrapy.Field()
+    url = scrapy.Field()
+    category = scrapy.Field()
