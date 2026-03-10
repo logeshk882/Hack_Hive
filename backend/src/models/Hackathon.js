@@ -9,6 +9,8 @@ const hackathonSchema = new mongoose.Schema({
     participants: { type: String },
     prize: { type: String },
     tags: [String],
+    url: { type: String },
+    category: { type: String },
     createdAt: { type: Date, default: Date.now }
 });
 
