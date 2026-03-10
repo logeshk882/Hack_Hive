@@ -1,18 +1,22 @@
+import { useState } from "react";
 import ParticlesBackground from "../components/ParticlesBackground";
 import Navbar from "../components/Navbar";
 import HeroSection from "../components/HeroSection";
 import StatsBar from "../components/StatsBar";
 import TrendingSection from "../components/TrendingSection";
+import CategorySection from "../components/CategorySection";
 import AllHackathonsSection from "../components/AllHackathonsSection";
 
 const Index = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
     <div className="min-h-screen bg-background grid-bg relative">
       <ParticlesBackground />
       <Navbar />
 
       {/* Hero */}
-      <HeroSection />
+      <HeroSection onSearch={setSearchQuery} searchQuery={searchQuery} />
 
       {/* Stats */}
       <div className="relative z-10 px-6 -mt-20 mb-20">
@@ -24,9 +28,14 @@ const Index = () => {
         <TrendingSection />
       </div>
 
-      {/* All Hackathons */}
+      {/* Category Browse */}
       <div className="relative z-10 px-6 max-w-7xl mx-auto mb-20">
-        <AllHackathonsSection />
+        <CategorySection />
+      </div>
+
+      {/* All Hackathons with filters */}
+      <div id="all-hackathons" className="relative z-10 px-6 max-w-7xl mx-auto mb-20">
+        <AllHackathonsSection searchQuery={searchQuery} />
       </div>
 
       {/* Footer */}
