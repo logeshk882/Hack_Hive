@@ -14,11 +14,32 @@ interface HackathonCardProps {
   index: number;
 }
 
+function parseHackathonDate(deadline: string): Date {
+  let date = new Date(deadline);
+  if (!isNaN(date.getTime())) return date;
+  
+  if (deadline && deadline.includes('-')) {
+    const parts = deadline.split('-');
+    const endPart = parts[parts.length - 1].trim();
+    date = new Date(endPart);
+    if (!isNaN(date.getTime())) return date;
+    
+    date = new Date(`${endPart}, ${new Date().getFullYear()}`);
+    if (!isNaN(date.getTime())) return date;
+  }
+  return new Date(NaN);
+}
+
 function useCountdown(deadline: string) {
   const [timeLeft, setTimeLeft] = useState("");
   useEffect(() => {
     const calc = () => {
-      const diff = new Date(deadline).getTime() - Date.now();
+      const targetDate = parseHackathonDate(deadline);
+      if (isNaN(targetDate.getTime())) {
+        setTimeLeft("");
+        return;
+      }
+      const diff = targetDate.getTime() - Date.now();
       if (diff <= 0) return setTimeLeft("Ended");
       const d = Math.floor(diff / 86400000);
       const h = Math.floor((diff % 86400000) / 3600000);
@@ -109,10 +130,13 @@ export default function HackathonCard({
           </div>
           <div className="flex items-center gap-1.5">
             <Calendar className="w-3 h-3 text-primary/60" />
-            {new Date(deadline).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+            {(() => {
+              const d = parseHackathonDate(deadline);
+              return isNaN(d.getTime()) ? (deadline || "TBD") : d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+            })()}
           </div>
           <div className="flex items-center gap-1.5 font-mono text-primary font-medium">
-            💰 {prize}
+            💰 {prize.replace(/<[^>]+>/g, '')}
           </div>
         </div>
 

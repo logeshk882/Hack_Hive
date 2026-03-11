@@ -1,5 +1,6 @@
 import scrapy
 import json
+import re
 from hack_scraper.items import HackathonItem
 
 
@@ -34,10 +35,9 @@ class DevpostSpider(scrapy.Spider):
             item["url"] = h.get("url", "")
             item["location"] = h.get("displayed_location", {}).get("location", "Online")
             item["participants"] = str(h.get("registrations_count", "TBD"))
-            item["prize"] = h.get("prize_amount", "Check Website") or "Check Website"
+            raw_prize = str(h.get("prize_amount", "Check Website") or "Check Website")
+            item["prize"] = re.sub(r'<[^>]+>', '', raw_prize).strip()
             item["deadline"] = h.get("submission_period_dates", "") or "2026-12-31"
-
-            # Tags from themes
             themes = h.get("themes", [])
             item["tags"] = [t.get("name", "") for t in themes if t.get("name")]
             if not item["tags"]:
