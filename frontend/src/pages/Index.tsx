@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ParticlesBackground from "../components/ParticlesBackground";
+import InteractiveBackground from "../components/InteractiveBackground";
 import Navbar from "../components/Navbar";
 import HeroSection from "../components/HeroSection";
 import StatsBar from "../components/StatsBar";
@@ -11,8 +11,8 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <div className="min-h-screen bg-background grid-bg relative">
-      <ParticlesBackground />
+    <div className="min-h-screen bg-background relative selection:bg-cyan-500/30">
+      <InteractiveBackground />
       <Navbar />
 
       {/* Hero */}

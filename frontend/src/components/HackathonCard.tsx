@@ -58,7 +58,16 @@ export default function HackathonCard({
 }: HackathonCardProps) {
   const [bookmarked, setBookmarked] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const timeLeft = useCountdown(deadline);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
 
   return (
     <motion.div
@@ -66,11 +75,14 @@ export default function HackathonCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
+      onMouseMove={handleMouseMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        transform: hovered ? "perspective(800px) rotateY(-2deg) rotateX(2deg) scale(1.02)" : "perspective(800px) rotateY(0) rotateX(0) scale(1)",
-        transition: "transform 0.4s cubic-bezier(0.23,1,0.32,1)",
+        transform: hovered 
+          ? `perspective(1000px) rotateX(${(mousePos.y - 150) / 15}deg) rotateY(${-(mousePos.x - 150) / 15}deg) scale(1.02)` 
+          : "perspective(1000px) rotateX(0) rotateY(0) scale(1)",
+        transition: hovered ? "none" : "all 0.5s ease-out",
       }}
       className="glass rounded-2xl p-6 relative overflow-hidden group cursor-pointer animated-border"
     >
@@ -78,7 +90,7 @@ export default function HackathonCard({
       <div
         className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{
-          background: "radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), hsl(192 95% 55% / 0.06), transparent 40%)",
+          background: `radial-gradient(400px circle at ${mousePos.x}px ${mousePos.y}px, hsl(192 95% 55% / 0.1), transparent 40%)`,
         }}
       />
 
