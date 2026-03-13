@@ -1,7 +1,14 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
 import { Code2, Github, Twitter } from "lucide-react";
 
 export default function Navbar() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
   return (
     <motion.nav
       initial={{ opacity: 0, y: -20 }}
@@ -37,6 +44,12 @@ export default function Navbar() {
           </button>
         </div>
       </div>
+
+      {/* Progress Bar */}
+      <motion.div
+        className="h-[2px] bg-gradient-neon origin-left"
+        style={{ scaleX }}
+      />
     </motion.nav>
   );
 }
