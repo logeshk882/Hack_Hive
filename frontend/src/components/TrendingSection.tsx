@@ -4,10 +4,23 @@ import { ChevronLeft, ChevronRight, Flame, Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import HackathonCard from "./HackathonCard";
 
+interface Hackathon {
+  _id?: string;
+  title: string;
+  organizer: string;
+  deadline: string;
+  participants: string;
+  prize: string;
+  tags: string[];
+  location: string;
+  source: string;
+  url: string;
+}
+
 export default function TrendingSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const { data: hackathons = [], isLoading, error } = useQuery({
+  const { data: hackathons = [], isLoading, error } = useQuery<Hackathon[]>({
     queryKey: ['hackathons'],
     queryFn: async () => {
       const response = await fetch('/api/hackathons');
