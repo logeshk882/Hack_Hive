@@ -12,12 +12,12 @@ class KnowafestSpider(scrapy.Spider):
         # Type 1: Featured cards (card-ghost)
         featured_cards = response.css("a.card.card-ghost")
         for card in featured_cards:
-            yield from self.parse_card(card, is_ghost=True)
+            yield from self.parse_card(card, response, is_ghost=True)
 
         # Type 2: Standard cards found on paginated pages (card-borderless)
         standard_cards = response.css("div.card.card-borderless")
         for card in standard_cards:
-            yield from self.parse_card(card, is_ghost=False)
+            yield from self.parse_card(card, response, is_ghost=False)
 
         # Pagination: follow 'Next' page links
         # We look for 'Next' text or the '»' character in the pagination area
@@ -27,19 +27,22 @@ class KnowafestSpider(scrapy.Spider):
             self.logger.info(f"Following pagination: {next_page}")
             yield response.follow(next_page, self.parse)
 
-    def parse_card(self, card, is_ghost=False):
+    def parse_card(self, card, response, is_ghost=False):
         item = HackathonItem()
         
         if is_ghost:
             title = card.css("p.card-text::text").get()
+            url = card.css("::attr(href)").get()
         else:
             # Standard cards have title in a.text-dark
             title = card.css("a.text-dark::text").get()
+            url = card.css("a.text-dark::attr(href)").get()
             
         if not title:
             return
 
         item["title"] = title.strip()
+        item["url"] = response.urljoin(url) if url else "https://www.knowafest.com"
         
         # Extract location and date info
         if is_ghost:
