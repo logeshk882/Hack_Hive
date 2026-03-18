@@ -34,6 +34,7 @@ interface Hackathon {
     tags: string[];
     location: string;
     source: string;
+    url: string;
 }
 
 export default function CategorySection() {

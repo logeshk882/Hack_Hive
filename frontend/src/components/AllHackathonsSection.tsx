@@ -1,7 +1,7 @@
-import { useState, useMemo, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useCallback, Fragment } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Grid3X3, List, Loader2, ServerOff, SlidersHorizontal, X } from "lucide-react";
+import { Grid3X3, List, Loader2, ServerOff, SlidersHorizontal, X, Plus } from "lucide-react";
 import HackathonCard from "./HackathonCard";
 
 const SOURCES = ["All", "knowafest", "devpost", "unstop"];
@@ -26,7 +26,10 @@ interface Hackathon {
   tags: string[];
   location: string;
   source: string;
+  url: string;
 }
+
+const ITEMS_PER_PAGE = 24;
 
 export default function AllHackathonsSection({ searchQuery = "" }: { searchQuery?: string }) {
   const [activeSource, setActiveSource] = useState("All");
@@ -34,48 +37,47 @@ export default function AllHackathonsSection({ searchQuery = "" }: { searchQuery
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
 
-  const { data: allHackathons = [], isLoading, error } = useQuery<Hackathon[]>({
-    queryKey: ["hackathons"],
-    queryFn: async () => {
-      const res = await fetch("/api/hackathons");
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+    refetch
+  } = useInfiniteQuery<Hackathon[]>({
+    queryKey: ["hackathons", activeSource, activeCategory, searchQuery],
+    queryFn: async ({ pageParam = 0 }) => {
+      const params = new URLSearchParams();
+      params.append("skip", String(pageParam));
+      params.append("limit", String(ITEMS_PER_PAGE));
+      
+      if (activeSource !== "All") params.append("source", activeSource);
+      
+      // If we have a category, we use the first keyword as a simple tag filter
+      // Alternatively, we could update the backend to support category-based keywords
+      if (activeCategory !== "All") {
+        const keywords = TAG_MAP[activeCategory] || [];
+        if (keywords.length > 0) {
+          params.append("search", keywords[0]); // Simple fallback to using first keyword as search
+        }
+      }
+      
+      if (searchQuery.trim()) {
+        params.append("search", searchQuery);
+      }
+
+      const res = await fetch(`/api/hackathons?${params.toString()}`);
       if (!res.ok) throw new Error("Network response was not ok");
       return res.json();
     },
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === ITEMS_PER_PAGE ? allPages.length * ITEMS_PER_PAGE : undefined;
+    },
+    initialPageParam: 0,
   });
 
-  const filtered = useMemo(() => {
-    let list = allHackathons;
-
-    // Source filter
-    if (activeSource !== "All") {
-      list = list.filter(h => h.source?.toLowerCase() === activeSource.toLowerCase());
-    }
-
-    // Category / tag filter
-    if (activeCategory !== "All") {
-      const keywords = TAG_MAP[activeCategory] ?? [];
-      list = list.filter(h => {
-        const hTags = (h.tags || []).map(t => t.toLowerCase());
-        const title = (h.title || "").toLowerCase();
-        return keywords.some(kw =>
-          hTags.some(t => t.includes(kw.toLowerCase())) || title.includes(kw.toLowerCase())
-        );
-      });
-    }
-
-    // Search
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      list = list.filter(h =>
-        h.title?.toLowerCase().includes(q) ||
-        h.organizer?.toLowerCase().includes(q) ||
-        h.location?.toLowerCase().includes(q) ||
-        h.tags?.some(t => t.toLowerCase().includes(q))
-      );
-    }
-
-    return list;
-  }, [allHackathons, activeSource, activeCategory, searchQuery]);
+  const allHackathons = data?.pages.flat() || [];
 
   const clearFilters = useCallback(() => {
     setActiveSource("All");
@@ -115,7 +117,7 @@ export default function AllHackathonsSection({ searchQuery = "" }: { searchQuery
           <div>
             <h2 className="text-2xl font-bold text-foreground">All Hackathons</h2>
             <p className="text-xs text-muted-foreground mt-0.5 font-mono">
-              {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+              Showing {allHackathons.length} hackathons
               {hasActiveFilters && " · filtered"}
             </p>
           </div>
@@ -230,7 +232,7 @@ export default function AllHackathonsSection({ searchQuery = "" }: { searchQuery
       </motion.div>
 
       {/* Grid / List */}
-      {filtered.length === 0 ? (
+      {allHackathons.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
           <span className="text-4xl">🔍</span>
           <p className="text-muted-foreground font-medium">No hackathons match your filters</p>
@@ -239,30 +241,61 @@ export default function AllHackathonsSection({ searchQuery = "" }: { searchQuery
           </button>
         </div>
       ) : (
-        <motion.div
-          layout
-          className={
-            viewMode === "grid"
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
-              : "flex flex-col gap-4"
-          }
-        >
-          <AnimatePresence mode="popLayout">
-            {filtered.map((h, i) => (
-              <motion.div
-                key={h._id || h.title}
-                layout
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.94 }}
-                transition={{ duration: 0.2, delay: i < 12 ? i * 0.04 : 0 }}
-                className={viewMode === "list" ? "w-full" : ""}
+        <>
+          <motion.div
+            layout
+            className={
+              viewMode === "grid"
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+                : "flex flex-col gap-4"
+            }
+          >
+            <AnimatePresence mode="popLayout">
+              {allHackathons.map((h, i) => (
+                <motion.div
+                  key={h._id || h.title + i}
+                  layout
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.94 }}
+                  transition={{ duration: 0.2, delay: i < 12 ? i * 0.04 : 0 }}
+                  className={viewMode === "list" ? "w-full" : ""}
+                >
+                  <HackathonCard {...h} index={i} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Load More Button */}
+          {hasNextPage && (
+            <div className="flex justify-center mt-12 pb-10">
+              <button
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+                className="flex items-center gap-2 px-8 py-3 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary font-medium transition-all duration-300 disabled:opacity-50 group"
               >
-                <HackathonCard {...h} index={i} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+                {isFetchingNextPage ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                    Load More Hackathons
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+          
+          {!hasNextPage && allHackathons.length > 0 && (
+            <p className="text-center text-muted-foreground text-xs mt-12 pb-10 font-mono">
+              You've reached the end of the galaxy 🌌
+            </p>
+          )}
+        </>
       )}
     </section>
   );

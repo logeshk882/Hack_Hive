@@ -11,6 +11,7 @@ interface HackathonCardProps {
   tags: string[];
   location: string;
   source: string;
+  url: string;
   index: number;
 }
 
@@ -54,7 +55,7 @@ function useCountdown(deadline: string) {
 }
 
 export default function HackathonCard({
-  title, organizer, deadline, participants, prize, tags, location, source, index,
+  title, organizer, deadline, participants, prize, tags, location, source, url, index,
 }: HackathonCardProps) {
   const [bookmarked, setBookmarked] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -158,9 +159,15 @@ export default function HackathonCard({
             <Clock className="w-3 h-3 text-neon-violet" />
             <span className="font-mono text-neon-violet font-medium">{timeLeft}</span>
           </div>
-          <div className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors">
-            View Details <ExternalLink className="w-3 h-3" />
-          </div>
+          <a 
+            href={url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors group/link"
+          >
+            View Details <ExternalLink className="w-3 h-3 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+          </a>
         </div>
       </div>
     </motion.div>
