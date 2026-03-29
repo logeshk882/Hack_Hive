@@ -58,27 +58,37 @@ export default function TrendingSection() {
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="flex items-center justify-between mb-8"
+        className="flex items-center justify-between mb-10"
       >
-        <div className="flex items-center gap-3">
-          <Flame className="w-5 h-5 text-neon-pink" />
-          <h2 className="text-2xl font-bold text-foreground">Trending Hackathons</h2>
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-neon-pink/10 text-neon-pink border border-neon-pink/20 animate-neon-pulse">
-            LIVE
-          </span>
+        <div className="flex items-center gap-4">
+          <div className="p-2 rounded-xl bg-accent/10 border border-accent/20">
+            <Flame className="w-5 h-5 text-accent" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-bold text-foreground serif leading-tight">Currently Rising</h2>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+              </span>
+              <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-[0.2em]">
+                Live Intelligence
+              </span>
+            </div>
+          </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <button
             onClick={() => scroll("left")}
-            className="p-2 rounded-lg glass text-muted-foreground hover:text-primary transition-colors"
+            className="p-3 rounded-full glass border-white/5 text-muted-foreground hover:text-primary hover:border-primary/30 transition-all shadow-sm"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={() => scroll("right")}
-            className="p-2 rounded-lg glass text-muted-foreground hover:text-primary transition-colors"
+            className="p-3 rounded-full glass border-white/5 text-muted-foreground hover:text-primary hover:border-primary/30 transition-all shadow-sm"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
       </motion.div>

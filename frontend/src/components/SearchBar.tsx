@@ -48,17 +48,12 @@ export default function SearchBar({ onSearch, value = "" }: SearchBarProps) {
   );
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.6, duration: 0.6 }}
-      className="w-full max-w-2xl mx-auto relative"
-    >
+    <div className="w-full max-w-2xl mx-auto relative">
       <div
-        className={`relative glass rounded-2xl transition-all duration-500 ${focused ? "search-glow" : "glow-border"
+        className={`relative glass rounded-2xl transition-all duration-500 overflow-hidden ${focused ? "shadow-premium border-primary/30" : "border-white/10"
           }`}
       >
-        <div className="flex items-center px-5 py-4 gap-3">
+        <div className="flex items-center px-6 py-4.5 gap-4">
           <Search className="w-5 h-5 text-primary shrink-0" />
           <input
             ref={inputRef}
@@ -66,9 +61,9 @@ export default function SearchBar({ onSearch, value = "" }: SearchBarProps) {
             value={query}
             onChange={(e) => handleChange(e.target.value)}
             onFocus={() => { setFocused(true); setShowSuggestions(true); }}
-            onBlur={() => { setFocused(false); setTimeout(() => setShowSuggestions(false), 150); }}
+            onBlur={() => { setFocused(false); setTimeout(() => setShowSuggestions(false), 200); }}
             placeholder='Search hackathons by name, category, location…'
-            className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground text-sm outline-none font-light"
+            className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground/50 text-base outline-none font-medium"
           />
           <AnimatePresence>
             {query && (
@@ -77,57 +72,59 @@ export default function SearchBar({ onSearch, value = "" }: SearchBarProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 onClick={handleClear}
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors p-1"
               >
                 <X className="w-4 h-4" />
               </motion.button>
             )}
           </AnimatePresence>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium shrink-0">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary text-[10px] uppercase font-bold tracking-widest shrink-0 border border-primary/20">
             <Sparkles className="w-3.5 h-3.5" />
-            AI Search
+            AI Intelligence
           </div>
         </div>
 
-        {/* Suggestion dropdown */}
+        {/* Suggestion dropdown - Higher visibility */}
         <AnimatePresence>
           {showSuggestions && filteredSuggestions.length > 0 && (
             <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="absolute left-0 right-0 top-full mt-2 glass rounded-xl overflow-hidden z-50 shadow-xl border border-border/50"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="border-t border-white/5 bg-background/95 backdrop-blur-2xl z-50 shadow-2xl"
             >
-              {filteredSuggestions.map((s, i) => (
-                <button
-                  key={s}
-                  onMouseDown={() => handleTagClick(s)}
-                  className="w-full text-left flex items-center gap-3 px-5 py-3 hover:bg-primary/10 transition-colors text-sm text-muted-foreground hover:text-foreground group"
-                >
-                  <Search className="w-3 h-3 text-primary/50 group-hover:text-primary transition-colors" />
-                  <span>{s}</span>
-                </button>
-              ))}
+              <div className="py-2">
+                {filteredSuggestions.map((s, i) => (
+                  <button
+                    key={s}
+                    onMouseDown={() => handleTagClick(s)}
+                    className="w-full text-left flex items-center gap-4 px-6 py-4 hover:bg-white/5 transition-colors text-sm text-foreground/70 hover:text-white group"
+                  >
+                    <Search className="w-3.5 h-3.5 text-primary/40 group-hover:text-primary transition-colors" />
+                    <span className="font-medium">{s}</span>
+                  </button>
+                ))}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      {/* Quick tag chips */}
-      <div className="flex items-center gap-2 mt-3 justify-center flex-wrap">
+      {/* Quick tag chips - Cleaner look */}
+      <div className="flex items-center gap-3 mt-4 justify-center flex-wrap">
         {["AI / ML", "Blockchain", "Web3", "Cybersecurity", "Open Source", "Climate"].map((tag) => (
           <button
             key={tag}
             onClick={() => handleTagClick(tag)}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 ${query === tag
-                ? "bg-primary/20 text-primary border border-primary/40"
-                : "glass text-muted-foreground hover:text-primary hover:border-primary/30 border border-transparent"
+            className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300 border ${query === tag
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-white/5 text-muted-foreground/60 hover:text-white hover:bg-white/10 border-white/5"
               }`}
           >
             {tag}
           </button>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 }

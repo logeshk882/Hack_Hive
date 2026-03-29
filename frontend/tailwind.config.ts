@@ -15,6 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
+        serif: ["Playfair Display", "serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
@@ -50,13 +51,6 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
-        },
-        neon: {
-          cyan: "hsl(var(--neon-cyan))",
-          blue: "hsl(var(--neon-blue))",
-          purple: "hsl(var(--neon-purple))",
-          violet: "hsl(var(--neon-violet))",
-          pink: "hsl(var(--neon-pink))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
