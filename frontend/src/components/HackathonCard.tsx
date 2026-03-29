@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Users, MapPin, Clock, Bookmark, ExternalLink } from "lucide-react";
+import { Calendar, Users, MapPin, Clock, Bookmark, ArrowRight } from "lucide-react";
 
 interface HackathonCardProps {
   title: string;
@@ -58,118 +58,113 @@ export default function HackathonCard({
   title, organizer, deadline, participants, prize, tags, location, source, url, index,
 }: HackathonCardProps) {
   const [bookmarked, setBookmarked] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const timeLeft = useCountdown(deadline);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setMousePos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
-  };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        transform: hovered 
-          ? `perspective(1000px) rotateX(${(mousePos.y - 150) / 15}deg) rotateY(${-(mousePos.x - 150) / 15}deg) scale(1.02)` 
-          : "perspective(1000px) rotateX(0) rotateY(0) scale(1)",
-        transition: hovered ? "none" : "all 0.5s ease-out",
-      }}
-      className="glass rounded-2xl p-6 relative overflow-hidden group cursor-pointer animated-border"
+      transition={{ delay: index * 0.05, duration: 0.5 }}
+      className="glass-card rounded-[1.5rem] p-7 relative overflow-hidden group cursor-pointer transition-all duration-500 hover:shadow-premium hover:-translate-y-1 border-white/5"
     >
-      {/* Hover glow */}
-      <div
-        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-        style={{
-          background: `radial-gradient(400px circle at ${mousePos.x}px ${mousePos.y}px, hsl(192 95% 55% / 0.1), transparent 40%)`,
-        }}
-      />
-
-      <div className="relative z-10">
+      <div className="relative z-10 h-full flex flex-col">
         {/* Header */}
-        <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <span className="text-xs font-mono text-primary/70 tracking-wider uppercase">{source}</span>
-            <h3 className="text-lg font-semibold text-foreground mt-1 leading-tight">{title}</h3>
-            <p className="text-sm text-muted-foreground mt-0.5">{organizer}</p>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-[10px] font-bold text-primary/80 tracking-[0.15em] uppercase px-2 py-0.5 bg-primary/10 rounded-md border border-primary/20">{source}</span>
+              {timeLeft && (
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-accent tracking-widest uppercase">
+                  <Clock className="w-3 h-3" />
+                  {timeLeft}
+                </div>
+              )}
+            </div>
+            <h3 className="text-xl font-bold text-foreground leading-tight group-hover:text-primary transition-colors duration-300 serif">{title}</h3>
+            <p className="text-sm text-muted-foreground/80 mt-1 font-medium italic">{organizer}</p>
           </div>
           <motion.button
-            whileTap={{ scale: 0.8 }}
+            whileTap={{ scale: 0.9 }}
             onClick={(e) => {
               e.stopPropagation();
               setBookmarked(!bookmarked);
             }}
-            className="p-2 rounded-lg hover:bg-muted/50 transition-colors"
+            className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 transition-colors border border-white/5"
           >
             <Bookmark
               className={`w-4 h-4 transition-all duration-300 ${
-                bookmarked ? "fill-primary text-primary" : "text-muted-foreground"
+                bookmarked ? "fill-primary text-primary" : "text-muted-foreground/60"
               }`}
             />
           </motion.button>
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          {tags.map((tag) => (
+        <div className="flex flex-wrap gap-2 mb-6">
+          {tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary border border-primary/20"
+              className="px-3 py-1 rounded-full text-[10px] font-semibold bg-white/5 text-muted-foreground/80 border border-white/10 uppercase tracking-wider"
             >
               {tag}
             </span>
           ))}
+          {tags.length > 3 && (
+            <span className="text-[10px] font-bold text-muted-foreground/40 self-center">+{tags.length - 3}</span>
+          )}
         </div>
 
         {/* Info grid */}
-        <div className="grid grid-cols-2 gap-2 mb-4 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <MapPin className="w-3 h-3 text-primary/60" />
-            {location}
+        <div className="grid grid-cols-2 gap-y-4 gap-x-2 mb-8 text-xs text-muted-foreground/70">
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded-lg bg-primary/5 border border-primary/10">
+              <MapPin className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <span className="truncate">{location}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Users className="w-3 h-3 text-primary/60" />
-            {participants}
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded-lg bg-accent/5 border border-accent/10">
+              <Users className="w-3.5 h-3.5 text-accent" />
+            </div>
+            <span>{participants}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Calendar className="w-3 h-3 text-primary/60" />
-            {(() => {
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded-lg bg-primary/5 border border-primary/10">
+              <Calendar className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <span>{(() => {
               const d = parseHackathonDate(deadline);
               return isNaN(d.getTime()) ? (deadline || "TBD") : d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-            })()}
+            })()}</span>
           </div>
-          <div className="flex items-center gap-1.5 font-mono text-primary font-medium">
-            💰 {prize.replace(/<[^>]+>/g, '')}
+          <div className="flex items-center gap-2.5 font-bold text-foreground">
+            <div className="p-1.5 rounded-lg bg-white/5 border border-white/10">
+              <span className="text-xs">💰</span>
+            </div>
+            <span className="truncate">{prize.replace(/<[^>]+>/g, '')}</span>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-3 border-t border-border/50">
-          <div className="flex items-center gap-1.5 text-xs">
-            <Clock className="w-3 h-3 text-neon-violet" />
-            <span className="font-mono text-neon-violet font-medium">{timeLeft}</span>
+        <div className="mt-auto pt-5 flex items-center justify-between border-t border-white/5">
+          <div className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">
+            Applications Close Soon
           </div>
           <a 
             href={url} 
             target="_blank" 
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors group/link"
+            className="flex items-center gap-2 text-xs font-bold text-primary hover:text-white transition-all group/link bg-primary/10 px-4 py-2 rounded-full border border-primary/20"
           >
-            View Details <ExternalLink className="w-3 h-3 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+            Details <ArrowRight className="w-3 h-3 group-hover/link:translate-x-1 transition-transform" />
           </a>
         </div>
       </div>
+      
+      {/* Decorative gradient wash */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[60px] rounded-full -mr-16 -mt-16 pointer-events-none" />
     </motion.div>
   );
 }

@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { Zap } from "lucide-react";
-import Globe3D from "./Globe3D";
+import { Sparkles, ArrowRight } from "lucide-react";
 import SearchBar from "./SearchBar";
 
 interface HeroSectionProps {
@@ -9,91 +8,83 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ onSearch, searchQuery }: HeroSectionProps) {
-  const scrollToHackathons = () => {
-    document.getElementById("all-hackathons")?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* 3D Globe Background */}
-      <Globe3D />
-
-      {/* Radial gradient overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,hsl(222_47%_4%)_70%)]" />
-
+    <section className="relative min-h-[95vh] flex flex-col items-center justify-center pt-32 pb-24 overflow-hidden">
       {/* Content */}
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-        {/* Badge */}
+      <div className="relative z-10 text-center px-6 max-w-5xl mx-auto flex-1 flex flex-col items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-medium text-primary mb-8"
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="space-y-8 mb-16"
         >
-          <Zap className="w-3.5 h-3.5" />
-          Aggregating hackathons in real-time
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-[0.2em]"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            Empowering the next generation of builders
+          </motion.div>
+          <h1 className="text-5xl md:text-7xl lg:text-[7rem] font-bold tracking-tight text-foreground serif leading-[1]">
+            Build the <span className="text-primary italic">Incredible</span>
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground/80 max-w-2xl mx-auto font-medium leading-[1.6]">
+            Discovery engine for the world's most ambitious hackathons. Access opportunities across the web, powered by precision intelligence.
+          </p>
         </motion.div>
 
-        {/* Headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.7 }}
-          className="text-5xl md:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6"
-        >
-          <span className="text-foreground">Discover Every</span>
-          <br />
-          <span className="text-gradient">Hackathon. Instantly.</span>
-        </motion.h1>
+        {/* Search Bar Container */}
+        <div className="w-full max-w-2xl mx-auto relative z-20">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="group relative"
+          >
+            <div className="absolute -inset-4 bg-primary/5 rounded-[3rem] blur-3xl opacity-0 group-hover:opacity-100 transition duration-1000" />
+            <SearchBar onSearch={onSearch} value={searchQuery} />
+          </motion.div>
+        </div>
 
-        {/* Subheadline */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 font-light"
-        >
-          AI-powered aggregation from Devpost, Unstop, Knowafest, and across the internet.
-          Never miss a hackathon again.
-        </motion.p>
-
-        {/* Search Bar */}
-        <SearchBar onSearch={onSearch} value={searchQuery} />
-
-        {/* CTA Buttons */}
+        {/* CTA Buttons - Increased Margin */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          className="flex items-center justify-center gap-4 mt-10"
+          transition={{ delay: 0.6, duration: 1 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-20 relative z-10"
         >
           <button
-            onClick={scrollToHackathons}
-            className="px-8 py-3 rounded-xl bg-gradient-neon text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all duration-300 glow-cyan animate-glow-pulse"
+            onClick={() => document.getElementById('all-hackathons')?.scrollIntoView({ behavior: 'smooth' })}
+            className="group relative px-12 py-5 rounded-full bg-primary text-primary-foreground font-bold text-sm uppercase tracking-[0.2em] shadow-premium hover:shadow-2xl transition-all duration-500 overflow-hidden"
           >
-            Explore Hackathons
+            <span className="relative z-10 flex items-center gap-3">
+              Explore All Hackathons
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-500" />
+            </span>
+            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
           </button>
-          <button className="px-8 py-3 rounded-xl glass text-foreground font-medium text-sm hover:text-primary hover:border-primary/30 transition-all duration-300">
-            How it works
+          
+          <button className="px-12 py-5 rounded-full glass border-white/5 text-foreground/80 font-bold text-sm uppercase tracking-[0.2em] hover:bg-white/10 hover:text-white transition-all duration-300">
+            Learn how we aggregate
           </button>
-        </motion.div>
-
-        {/* Source logos */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
-          className="mt-16 flex items-center justify-center gap-8 text-muted-foreground/50 text-xs font-mono tracking-wider"
-        >
-          <span>DEVPOST</span>
-          <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-          <span>UNSTOP</span>
-          <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-          <span>KNOWAFEST</span>
-          <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-          <span>MLH</span>
         </motion.div>
       </div>
+
+      {/* Source logos - Clean Editorial Look */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 1.5 }}
+        className="relative z-10 mt-24 flex flex-wrap items-center justify-center gap-x-12 gap-y-6 text-muted-foreground/20 text-[10px] font-bold tracking-[0.3em] uppercase"
+      >
+        <span className="hover:text-muted-foreground/60 transition-colors cursor-default">Devpost</span>
+        <span className="hover:text-muted-foreground/60 transition-colors cursor-default">Unstop</span>
+        <span className="hover:text-muted-foreground/60 transition-colors cursor-default">Knowafest</span>
+        <span className="hover:text-muted-foreground/60 transition-colors cursor-default">MLH</span>
+        <span className="hover:text-muted-foreground/60 transition-colors cursor-default">DoraHacks</span>
+      </motion.div>
     </section>
   );
 }
