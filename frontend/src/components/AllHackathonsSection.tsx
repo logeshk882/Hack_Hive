@@ -111,50 +111,50 @@ export default function AllHackathonsSection({ searchQuery = "" }: { searchQuery
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="flex flex-col gap-4 mb-8"
+        className="flex flex-col gap-6 mb-12"
       >
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">All Hackathons</h2>
-            <p className="text-xs text-muted-foreground mt-0.5 font-mono">
-              Showing {allHackathons.length} hackathons
-              {hasActiveFilters && " · filtered"}
+            <h2 className="text-4xl font-bold text-foreground serif">All Opportunities</h2>
+            <p className="text-sm text-muted-foreground/60 mt-2 font-medium">
+              A comprehensive directory of {allHackathons.length} active hackathons
+              {hasActiveFilters && " curated for your preferences"}
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {hasActiveFilters && (
               <motion.button
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 onClick={clearFilters}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20 transition-colors"
               >
-                <X className="w-3 h-3" /> Clear Filters
+                <X className="w-3 h-3" /> Reset
               </motion.button>
             )}
             <button
               onClick={() => setShowFilters(v => !v)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 ${showFilters ? "bg-primary/10 text-primary border border-primary/30" : "glass text-muted-foreground hover:text-foreground"
+              className={`flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 ${showFilters ? "bg-primary text-primary-foreground shadow-premium" : "glass text-muted-foreground hover:text-foreground"
                 }`}
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
-              Filters
+              Advanced Filters
             </button>
 
             {/* View toggle */}
-            <div className="flex glass rounded-lg overflow-hidden border border-border/50">
+            <div className="flex glass rounded-full overflow-hidden border border-white/5 p-1">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2 transition-colors ${viewMode === "grid" ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                className={`p-2 rounded-full transition-all duration-300 ${viewMode === "grid" ? "bg-white/10 text-primary" : "text-muted-foreground hover:text-foreground"}`}
               >
-                <Grid3X3 className="w-3.5 h-3.5" />
+                <Grid3X3 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2 transition-colors ${viewMode === "list" ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                className={`p-2 rounded-full transition-all duration-300 ${viewMode === "list" ? "bg-white/10 text-primary" : "text-muted-foreground hover:text-foreground"}`}
               >
-                <List className="w-3.5 h-3.5" />
+                <List className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -169,18 +169,18 @@ export default function AllHackathonsSection({ searchQuery = "" }: { searchQuery
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden"
             >
-              <div className="glass rounded-xl p-4 flex flex-col gap-4">
+              <div className="glass-card rounded-[2rem] p-8 flex flex-col md:flex-row gap-8 border-white/5">
                 {/* Source filter */}
-                <div>
-                  <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-2">Platform</p>
+                <div className="flex-1">
+                  <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em] mb-4">Discovery Platform</p>
                   <div className="flex flex-wrap gap-2">
                     {SOURCES.map(src => (
                       <button
                         key={src}
                         onClick={() => setActiveSource(src)}
-                        className={`px-3 py-1 rounded-full text-xs font-medium border transition-all duration-200 ${activeSource === src
-                            ? "bg-primary/20 text-primary border-primary/40"
-                            : "border-border/50 text-muted-foreground hover:text-foreground hover:border-border"
+                        className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider border transition-all duration-300 ${activeSource === src
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-white/5 border-white/5 text-muted-foreground/60 hover:text-white hover:bg-white/10"
                           }`}
                       >
                         {src}
@@ -190,16 +190,16 @@ export default function AllHackathonsSection({ searchQuery = "" }: { searchQuery
                 </div>
 
                 {/* Category filter */}
-                <div>
-                  <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-2">Category</p>
+                <div className="flex-1">
+                  <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em] mb-4">Vertical Category</p>
                   <div className="flex flex-wrap gap-2">
                     {TAG_CATEGORIES.map(cat => (
                       <button
                         key={cat}
                         onClick={() => setActiveCategory(cat)}
-                        className={`px-3 py-1 rounded-full text-xs font-medium border transition-all duration-200 ${activeCategory === cat
-                            ? "bg-neon-violet/20 text-purple-300 border-purple-500/40"
-                            : "border-border/50 text-muted-foreground hover:text-foreground hover:border-border"
+                        className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider border transition-all duration-300 ${activeCategory === cat
+                            ? "bg-accent text-accent-foreground border-accent"
+                            : "bg-white/5 border-white/5 text-muted-foreground/60 hover:text-white hover:bg-white/10"
                           }`}
                       >
                         {cat}
@@ -214,17 +214,17 @@ export default function AllHackathonsSection({ searchQuery = "" }: { searchQuery
 
         {/* Quick filter chips (always visible) */}
         {!showFilters && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {SOURCES.map(src => (
               <button
                 key={src}
                 onClick={() => setActiveSource(src)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border ${activeSource === src
+                className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 border ${activeSource === src
                     ? "bg-primary/10 text-primary border-primary/30"
-                    : "border-border/40 glass text-muted-foreground hover:text-foreground"
+                    : "border-white/5 glass text-muted-foreground hover:text-foreground bg-white/5"
                   }`}
               >
-                {src === "All" ? "All Platforms" : src.charAt(0).toUpperCase() + src.slice(1)}
+                {src === "All" ? "All Platforms" : src}
               </button>
             ))}
           </div>
@@ -233,11 +233,13 @@ export default function AllHackathonsSection({ searchQuery = "" }: { searchQuery
 
       {/* Grid / List */}
       {allHackathons.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
-          <span className="text-4xl">🔍</span>
-          <p className="text-muted-foreground font-medium">No hackathons match your filters</p>
-          <button onClick={clearFilters} className="text-xs text-primary hover:underline">
-            Clear filters
+        <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
+          <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center border border-white/5 mb-2">
+              <ServerOff className="w-6 h-6 text-muted-foreground/40" />
+          </div>
+          <p className="text-muted-foreground/60 font-medium serif text-xl">No opportunities match your current filters</p>
+          <button onClick={clearFilters} className="text-xs font-bold uppercase tracking-widest text-primary hover:text-white transition-colors">
+            Reset All Filters
           </button>
         </div>
       ) : (
@@ -246,8 +248,8 @@ export default function AllHackathonsSection({ searchQuery = "" }: { searchQuery
             layout
             className={
               viewMode === "grid"
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
-                : "flex flex-col gap-4"
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                : "flex flex-col gap-6"
             }
           >
             <AnimatePresence mode="popLayout">
@@ -255,10 +257,10 @@ export default function AllHackathonsSection({ searchQuery = "" }: { searchQuery
                 <motion.div
                   key={h._id || h.title + i}
                   layout
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.94 }}
-                  transition={{ duration: 0.2, delay: i < 12 ? i * 0.04 : 0 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.3, delay: i < 9 ? i * 0.05 : 0 }}
                   className={viewMode === "list" ? "w-full" : ""}
                 >
                   <HackathonCard {...h} index={i} />
@@ -269,21 +271,21 @@ export default function AllHackathonsSection({ searchQuery = "" }: { searchQuery
 
           {/* Load More Button */}
           {hasNextPage && (
-            <div className="flex justify-center mt-12 pb-10">
+            <div className="flex justify-center mt-20 pb-20">
               <button
                 onClick={() => fetchNextPage()}
                 disabled={isFetchingNextPage}
-                className="flex items-center gap-2 px-8 py-3 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary font-medium transition-all duration-300 disabled:opacity-50 group"
+                className="flex items-center gap-3 px-10 py-4 rounded-full bg-primary text-primary-foreground font-bold text-xs uppercase tracking-[0.2em] shadow-premium hover:shadow-2xl transition-all duration-500 disabled:opacity-50 group"
               >
                 {isFetchingNextPage ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Loading...
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Syncing...
                   </>
                 ) : (
                   <>
-                    <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-                    Load More Hackathons
+                    <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-500" />
+                    Load More Opportunities
                   </>
                 )}
               </button>
@@ -291,9 +293,9 @@ export default function AllHackathonsSection({ searchQuery = "" }: { searchQuery
           )}
           
           {!hasNextPage && allHackathons.length > 0 && (
-            <p className="text-center text-muted-foreground text-xs mt-12 pb-10 font-mono">
-              You've reached the end of the galaxy 🌌
-            </p>
+            <div className="text-center text-muted-foreground/30 text-[10px] font-bold uppercase tracking-[0.4em] mt-24 pb-20">
+              You have explored all currently available opportunities
+            </div>
           )}
         </>
       )}

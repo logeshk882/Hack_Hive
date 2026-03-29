@@ -67,21 +67,20 @@ export default function CategorySection() {
     return (
         <section>
             <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="mb-8"
+                className="mb-10 text-center"
             >
-                <h2 className="text-2xl font-bold text-foreground">Browse by Category</h2>
-                <p className="text-xs text-muted-foreground mt-0.5 font-mono">
-                    {nonEmpty.length} categories · expand to explore
+                <h2 className="text-4xl font-bold text-foreground serif">Curated Ecosystems</h2>
+                <p className="text-muted-foreground mt-2 max-w-lg mx-auto">
+                    Explore hackathons by specialized domains. Each category is hand-vetted for quality and authenticity.
                 </p>
             </motion.div>
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-5">
                 {nonEmpty.map(([category, hackathons], idx) => {
                     const Icon = CATEGORY_ICONS[category] ?? Box;
-                    const colors = CATEGORY_COLORS[category] ?? "text-primary bg-primary/10 border-primary/20";
                     const isOpen = expanded[category] ?? false;
                     const preview = hackathons.slice(0, 3);
 
@@ -91,41 +90,40 @@ export default function CategorySection() {
                             initial={{ opacity: 0, y: 16 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: idx * 0.06 }}
-                            className="glass rounded-2xl overflow-hidden border border-border/40"
+                            transition={{ delay: idx * 0.05 }}
+                            className={`glass-card rounded-[2rem] overflow-hidden border border-white/5 transition-all duration-500 ${isOpen ? 'shadow-premium' : ''}`}
                         >
                             {/* Category Header */}
                             <button
                                 onClick={() => toggle(category)}
-                                className="w-full flex items-center justify-between px-6 py-4 hover:bg-white/5 transition-colors group"
+                                className={`w-full flex items-center justify-between px-8 py-6 transition-all duration-300 ${isOpen ? 'bg-white/5' : 'hover:bg-white/5'}`}
                             >
-                                <div className="flex items-center gap-3">
-                                    <span className={`flex items-center justify-center w-8 h-8 rounded-lg border text-sm ${colors}`}>
-                                        <Icon className="w-4 h-4" />
-                                    </span>
-                                    <div className="text-left">
-                                        <p className="font-semibold text-foreground text-sm">{category}</p>
-                                        <p className="text-[11px] text-muted-foreground font-mono">
-                                            {hackathons.length} hackathon{hackathons.length !== 1 ? "s" : ""}
-                                        </p>
+                                <div className="flex items-center gap-5 text-left">
+                                    <div className={`p-3 rounded-2xl bg-primary/10 border border-primary/20 text-primary shadow-inner-glow`}>
+                                        <Icon className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-bold text-foreground serif">{category}</h3>
+                                        <div className="flex items-center gap-2 mt-0.5">
+                                            <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+                                                {hackathons.length} Opportunities Available
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    {/* Mini preview dots */}
-                                    <div className="hidden md:flex gap-1">
-                                        {preview.map((h) => (
-                                            <span
-                                                key={h._id || h.title}
-                                                className="w-1.5 h-1.5 rounded-full bg-primary/40"
-                                            />
+                                <div className="flex items-center gap-6">
+                                    {/* Mini preview items */}
+                                    <div className="hidden md:flex -space-x-3 overflow-hidden">
+                                        {preview.map((_, i) => (
+                                            <div
+                                                key={i}
+                                                className="w-8 h-8 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground"
+                                            >
+                                                {i + 1}
+                                            </div>
                                         ))}
-                                        {hackathons.length > 3 && (
-                                            <span className="text-[10px] text-muted-foreground font-mono ml-1">
-                                                +{hackathons.length - 3}
-                                            </span>
-                                        )}
                                     </div>
-                                    <span className="text-muted-foreground group-hover:text-primary transition-colors">
+                                    <span className={`w-8 h-8 rounded-full flex items-center justify-center border border-white/10 transition-colors ${isOpen ? 'bg-primary text-white border-primary' : 'text-muted-foreground group-hover:text-primary'}`}>
                                         {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                                     </span>
                                 </div>
@@ -140,8 +138,8 @@ export default function CategorySection() {
                                         exit={{ opacity: 0, height: 0 }}
                                         className="overflow-hidden"
                                     >
-                                        <div className="px-6 pb-6 pt-2">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        <div className="px-8 pb-8 pt-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                                 {hackathons.map((h, i) => (
                                                     <HackathonCard key={h._id || h.title} {...h} index={i} />
                                                 ))}
