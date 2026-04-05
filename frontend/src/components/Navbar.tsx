@@ -1,7 +1,12 @@
 import { motion, useScroll, useSpring } from "framer-motion";
 import { Code2, Github, Twitter } from "lucide-react";
+import { Link } from "react-router-dom";
 
-export default function Navbar() {
+interface NavbarProps {
+  onSignInClick: () => void;
+}
+
+export default function Navbar({ onSignInClick }: NavbarProps) {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -17,7 +22,7 @@ export default function Navbar() {
       className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5"
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3 group cursor-pointer">
+        <Link to="/" className="flex items-center gap-3 group cursor-pointer decoration-none">
           <div className="p-1.5 rounded-lg bg-primary/10 border border-primary/20 group-hover:bg-primary/20 transition-colors">
             <Code2 className="w-5 h-5 text-primary" />
           </div>
@@ -25,7 +30,7 @@ export default function Navbar() {
           <span className="text-[9px] font-bold text-muted-foreground/40 px-2 py-0.5 rounded-full border border-white/10 uppercase tracking-widest">
             v1.0
           </span>
-        </div>
+        </Link>
 
         <div className="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-widest text-muted-foreground/60">
           <a href="#" className="hover:text-primary transition-colors">Opportunities</a>
@@ -43,7 +48,10 @@ export default function Navbar() {
               <Twitter className="w-4 h-4" />
             </a>
           </div>
-          <button className="px-6 py-2 rounded-full bg-white/5 text-foreground/80 text-xs font-bold uppercase tracking-widest border border-white/10 hover:bg-white/10 hover:text-white transition-all duration-300">
+          <button 
+            onClick={onSignInClick}
+            className="px-6 py-2 rounded-full bg-white/5 text-foreground/80 text-xs font-bold uppercase tracking-widest border border-white/10 hover:bg-white/10 hover:text-white transition-all duration-300"
+          >
             Sign In
           </button>
         </div>
