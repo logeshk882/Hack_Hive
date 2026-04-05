@@ -6,14 +6,16 @@ import StatsBar from "../components/StatsBar";
 import TrendingSection from "../components/TrendingSection";
 import CategorySection from "../components/CategorySection";
 import AllHackathonsSection from "../components/AllHackathonsSection";
+import SignInModal from "../components/SignInModal";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSignInOpen, setIsSignInOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background relative selection:bg-primary/30">
       <InteractiveBackground />
-      <Navbar />
+      <Navbar onSignInClick={() => setIsSignInOpen(true)} />
 
       {/* Hero */}
       <HeroSection onSearch={setSearchQuery} searchQuery={searchQuery} />
@@ -50,6 +52,12 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      {/* Dynamic Sign In Modal */}
+      <SignInModal 
+        isOpen={isSignInOpen} 
+        onClose={() => setIsSignInOpen(false)} 
+      />
     </div>
   );
 };
