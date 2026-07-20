@@ -1,6 +1,7 @@
 import os
 import time
 import datetime
+from hack_scraper.cleanup_expired import cleanup_expired_hackathons
 
 spiders = [
     "knowafest",
@@ -9,6 +10,9 @@ spiders = [
 
 def run_spiders():
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{current_time}] Running database pre-crawl cleanup...")
+    cleanup_expired_hackathons()
+
     print(f"[{current_time}] Started crawling...")
 
     for spider in spiders:
@@ -17,6 +21,8 @@ def run_spiders():
         if result != 0:
             print(f"[WARNING] Spider '{spider}' exited with code {result}")
 
+    print(f"[{current_time}] Running database post-crawl cleanup...")
+    cleanup_expired_hackathons()
     print(f"[{current_time}] All crawl tasks completed.")
 
 if __name__ == "__main__":
@@ -24,4 +30,4 @@ if __name__ == "__main__":
     while True:
         run_spiders()
         print("Waiting for 1 hour (3600 seconds) before the next crawl...")
-        time.sleep(3600)
+        time.sleep(3600)

@@ -68,7 +68,12 @@ class KnowafestSpider(scrapy.Spider):
             item["deadline"] = clean_date.strip()
         else:
             item["location"] = full_info if full_info else "India"
-            item["deadline"] = "2026-12-31"
+            year_match = re.search(r'\b(20[0-9]{2}|2K[0-9]{2})\b', title, flags=re.IGNORECASE)
+            if year_match:
+                past_y = year_match.group(1).replace("2K", "20").replace("2k", "20")
+                item["deadline"] = f"{past_y}-12-31"
+            else:
+                item["deadline"] = "TBD"
 
         item["organizer"] = "Knowafest"
         item["source"] = "knowafest"
