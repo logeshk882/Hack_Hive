@@ -16,18 +16,31 @@ interface HackathonCardProps {
 }
 
 function parseHackathonDate(deadline: string): Date {
-  let date = new Date(deadline);
+  if (!deadline) return new Date(NaN);
+
+  let str = deadline.trim();
+
+  // Try direct Date parse
+  let date = new Date(str);
   if (!isNaN(date.getTime())) return date;
   
-  if (deadline && deadline.includes('-')) {
-    const parts = deadline.split('-');
-    const endPart = parts[parts.length - 1].trim();
-    date = new Date(endPart);
-    if (!isNaN(date.getTime())) return date;
-    
-    date = new Date(`${endPart}, ${new Date().getFullYear()}`);
-    if (!isNaN(date.getTime())) return date;
+  // Clean up range (e.g. "Jun 01 - Jul 15, 2026")
+  if (str.includes(' - ') || (str.includes('-') && !/^\d{4}-\d{2}-\d{2}$/.test(str))) {
+    const parts = str.split(/-|\bto\b/i);
+    str = parts[parts.length - 1].trim();
   }
+
+  // Clean noise text
+  str = str.replace(/@.*$/, '').trim();
+  str = str.replace(/^starts\s+/i, '').trim();
+  str = str.replace(/(\d+)(st|nd|rd|th)/gi, '$1');
+
+  date = new Date(str);
+  if (!isNaN(date.getTime())) return date;
+  
+  date = new Date(`${str}, ${new Date().getFullYear()}`);
+  if (!isNaN(date.getTime())) return date;
+
   return new Date(NaN);
 }
 

@@ -3,6 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const Hackathon = require('./models/Hackathon');
+const { isHackathonClosed } = require('./utils/dateUtils');
+const { cleanupExpiredHackathons } = require('./utils/cleanupExpired');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -14,7 +16,15 @@ app.use(express.json());
 // MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/hackathons';
 mongoose.connect(MONGO_URI)
-    .then(() => console.log('Successfully connected to MongoDB/hackathons'))
+    .then(async () => {
+        console.log('Successfully connected to MongoDB/hackathons');
+        // Initial cleanup on startup
+        await cleanupExpiredHackathons();
+        // Schedule auto-cleanup every 1 hour (3600000 ms)
+        setInterval(() => {
+            cleanupExpiredHackathons().catch(err => console.error('Periodic cleanup error:', err));
+        }, 3600000);
+    })
     .catch(err => console.error('MongoDB connection error:', err));
 
 // Basic Route
@@ -25,6 +35,24 @@ app.get('/', (req, res) => {
 // Health check
 app.get('/api/health', (req, res) => {
     res.json({ status: "ok", timestamp: new Date() });
+});
+
+// Manual Cleanup Endpoint - purges expired/closed hackathons
+app.post('/api/hackathons/cleanup', async (req, res) => {
+    try {
+        const result = await cleanupExpiredHackathons();
+        res.json({ message: "Cleanup completed successfully", ...result });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+app.delete('/api/hackathons/cleanup', async (req, res) => {
+    try {
+        const result = await cleanupExpiredHackathons();
+        res.json({ message: "Cleanup completed successfully", ...result });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
 // Get hackathons with search, source filter, tag filter, pagination
@@ -53,10 +81,13 @@ app.get('/api/hackathons', async (req, res) => {
             ];
         }
 
-        const hackathons = await Hackathon.find(query)
+        let hackathons = await Hackathon.find(query)
             .sort({ createdAt: -1 })
             .skip(Number(skip))
             .limit(Number(limit));
+
+        // Filter out closed/expired hackathons
+        hackathons = hackathons.filter(h => !isHackathonClosed(h.deadline, h.title));
 
         res.json(hackathons);
     } catch (err) {
@@ -76,7 +107,8 @@ app.get('/api/hackathons/categories', async (req, res) => {
             'Design / UX': ['design', 'ux', 'ui', 'product design', 'creative'],
         };
 
-        const allHackathons = await Hackathon.find().sort({ createdAt: -1 });
+        let allHackathons = await Hackathon.find().sort({ createdAt: -1 });
+        allHackathons = allHackathons.filter(h => !isHackathonClosed(h.deadline, h.title));
 
         const categorized = {};
         const matchedIds = new Set();
@@ -103,10 +135,13 @@ app.get('/api/hackathons/categories', async (req, res) => {
 // Stats endpoint
 app.get('/api/stats', async (req, res) => {
     try {
-        const total = await Hackathon.countDocuments();
-        const sources = await Hackathon.distinct('source');
-        const locations = await Hackathon.distinct('location');
-        res.json({ total, sources: sources.length, locations: locations.length });
+        const allHackathons = await Hackathon.find();
+        const activeHackathons = allHackathons.filter(h => !isHackathonClosed(h.deadline, h.title));
+        
+        const sources = new Set(activeHackathons.map(h => h.source).filter(Boolean));
+        const locations = new Set(activeHackathons.map(h => h.location).filter(Boolean));
+        
+        res.json({ total: activeHackathons.length, sources: sources.size, locations: locations.size });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -115,3 +150,4 @@ app.get('/api/stats', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
+
